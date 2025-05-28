@@ -4,46 +4,6 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/app/db_conn/dbConnect";
 import UserModel from "@/app/model/User";
 
-export const authoOption: NextAuthOptions ={
-    providers: [
-        CredentialsProvider ({ 
-          
-        })
-
-    callbacks: {
-        async session({ session, token }) {
-      return session
-    },
-    async jwt({ token, user}) {
-      return token
-    }
-    
-    }
-
-
-    ],
-    pages: {
-        signIn: '/sign-in'
-
-    },
-    session:{
-        strategy:"jwt"
-    },
-    secret: process.env.NEXTAUTH_SECRET
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const authOptions:NextAuthOptions = {
     // Configure one or more authentication providers
         providers: [
@@ -86,5 +46,30 @@ export const authOptions:NextAuthOptions = {
               }
              })
 
-         ]
+         ],
+         callbacks:{
+          async jwt ({token, user}) {
+            if (user) {
+              token.id = user._id?.toString()
+              token.username = user.username;
+              token.isVerified = user. isVerified;
+              token.isAcceotingMessages = user.isAcceotingMessages;
+            }
+            return token
+          },
+          async session({session, token}) {
+            if (token) {
+              
+            }
+            return session
+          },
+
+         },
+         pages: {
+          signIn: '/sign-in'
+         },
+         session: {
+          strategy:"jwt"
+         },
+           secret: process.env.NEXTAUTH_SECRET
 }
